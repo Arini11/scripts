@@ -1,20 +1,35 @@
 #!/bin/sh
 
-# This script does the following:
-#	Run by itself, set the wallpaper (at X start).
-#	If given a file, set that as the new wallpaper.
-#	If given a directory, choose random file in it.
-#	If wal is installed, also generates a colorscheme.
+# SCRIPT PER A CANVIAR EL FONS DE PANTALLA,
+# I A PARTIR DELS COLORS DEL FONS I GRÀCIES
+# AL PROGRAMA WAL, GENERAR UN ESQUEMA DE 
+# COLORS PER AL TERMINAL.
 
-# Location of link to wallpaper link.
-bgloc="${XDG_DATA_HOME:-$HOME/.local/share/}/bg"
+# Variable per a guardar la ubicació de l'enllaç simbòlic de la imatge que s'establirà
+# de fons de pantalla. Per a tenir-ne una ruta fixa. Si la variable XDG_DATA_HOME està
+# definida, s'utilitzarà, si no, s'utilitzarà $HOME/.local/share/bg
+bgloc="${XDG_DATA_HOME:-$HOME/.local/share}/bg"
 
-[ -f "$1" ] && ln -sf "$(readlink -f "$1")" "$bgloc" && notify-send -i "$bgloc" "Changing wallpaper..."
+# $1 és el primer paràmetre després del nom de la ordre ex. setbg 01.png $1 equivaldria
+# a 01.png Per tant, aquesta línia comprova si existeix el fitxer entrat i,
+# en cas positiu, busca la ruta completa i crea un enllaç simbòlic. Finalment mostra
+# una notificació.
+[ -f "$1" ] && ln -sf "$(readlink -f "$1")" "$bgloc" && notify-send -i "$bgloc" "Canviant imatge del fons de l'escriptori..."
 
+# En cas que el paràmetre sigui un directori, n'extreu la ruta completa, en llista tots els arxius
+# acabats en extensions d'imatges, i en selecciona un a l'atzar, al qual li farà un enllaç
+# simbòlic, com a la línia anterior.
 [ -d "$1" ] && ln -sf "$(find "$(readlink -f "$1")" -iregex '.*.\(jpg\|jpeg\|png\|gif\)' -type f | shuf -n 1)" "$bgloc" && notify-send -i "$bgloc" "Random Wallpaper chosen."
 
-# If pywal is installed, use it.
+# Si el programa pywal està instal·lat, extreurà un esquema de colors de la imatge escollida.
 wal -i "$(readlink -f "$bgloc")" -o "${XDG_CONFIG_HOME:-$HOME/.config}/wal/postrun" >/dev/null 2>&1
 
+# Refresca l'esquema de colors de dwm, si s'ha modificat Xresources.
+# Avís: Cal tenir dwm configurat de manera correcta per a que aquesta línia faci efecte.
+# xdotool serverix per a simular la premuda de tecles des d'un script. En aquest cas de
+# la combinació de tecles super+F12, però si dwm no està configurat de manera que
+# prement super+F12 executi xrdb, per actualitzar l'esquema de colors, no farà efecte.
 pidof dwm >/dev/null && xdotool key super+F12
+
+#Finalment, es canvia la imatge de fons de pantalla.
 xwallpaper --zoom "$bgloc"
