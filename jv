@@ -1,5 +1,10 @@
 #!/bin/sh
-arxiu=$(readlink -f $1)
-arxiu2=$(readlink -f $1 | sed 's/.class//')
-javac $arxiu && java $arxiu2
 
+# Programa com make, però per java.
+# Compila i executa amb una sola ordre
+# Exemple d'ús: jv ex01
+# Converteix 'ex01' a 'ex01.java', i compila.
+# Acte seguit, executa 'ex01'
+arxiu=$(readlink -f $1 | sed 's/$/.java/')
+dir=$(dirname $arxiu)
+javac $arxiu && java -cp $dir $1
