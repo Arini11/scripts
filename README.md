@@ -1,6 +1,6 @@
 Programes que es necessiten per a cada script
 
-##GENERAL
+#GENERAL
   Daemon de notificacions: dunst, tiramisu, etc
   
 # setbg
