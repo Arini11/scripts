@@ -1,0 +1,5 @@
+#!/bin/sh
+arxiu=$(readlink -f $1)
+arxiu2=$(readlink -f $1 | sed 's/.class//')
+javac $arxiu && java $arxiu2
+
