@@ -1,0 +1,6 @@
+#!/bin/sh
+# Actualitzar arxius de configuració a github
+
+arxiu="$(readlink -f $1)"
+ruta=~/.arxius_configuracio
+[ -f $1 ] && cp $arxiu $HOME/.arxius_configuracio/ && git -C $ruta add $1 && git -C $ruta commit -m "commit" && git -C $ruta push 
